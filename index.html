@@ -18,7 +18,7 @@
             flex-direction: column;
         }
 
-        .countdown {
+        #countdown {
             font-size: 20px;
             font-weight: bold;
             color: white;
@@ -137,7 +137,7 @@
 </head>
 <body>
 
-    <div class="countdown">
+    <div id="countdown">
         Holi in <span id="timer"></span> 🎉
     </div>
 
@@ -165,19 +165,18 @@
             const difference = holiDate - now;
 
             if (difference <= 0) {
-                document.getElementById("timer").innerText = "Holi is Here! 🎉";
-                return;
-            }
-
+                document.getElementById("countdown").innerText = "Holi is Here! Happy Holi 🎉";
+                clearInterval(counterInterval);
+            }else{
             const days = Math.floor(difference / (1000 * 60 * 60 * 24));
             const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
             document.getElementById("timer").innerText = `${days}d : ${hours}h : ${minutes}m : ${seconds}s`;
         }
+        }
 
-        setInterval(updateCountdown, 1000);
+        var counterInterval=setInterval(updateCountdown, 1000);
         updateCountdown(); // Initial Call
 
         function generateGreeting() {
