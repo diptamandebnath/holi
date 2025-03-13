@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Holi Greeting Card</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
+
     <style>
+
         body {
             margin: 0;
             padding: 0;
@@ -17,7 +21,7 @@
             flex-direction: column;
         }
 
-        .countdown {
+        #countdown {
             font-size: 20px;
             font-weight: bold;
             color: white;
@@ -38,6 +42,7 @@
             border-radius: 15px;
             text-align: center;
             margin-bottom: 10px;
+            width: 300px;
         }
 
         .btn {
@@ -131,73 +136,138 @@
             background: #ff4081;
             color: white;
         }
-
+        label {
+            font-weight: bolder;
+            background: #ffffffbd;
+            padding: 5px;
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="countdown">
-        <span id="timer"></span> 🎉
+    <div id="countdown">
+        Holi in <span id="timer"></span> 🎉
     </div>
 
-    <div class="container">
-        <input type="text" id="name" class="name-input" placeholder="Enter Your Name">
-        <button class="btn" onclick="generateGreeting()">Get Your Greeting</button>
-    </div>
+    <form class="container" onsubmit="generateGreeting(event)">
+        <label for="username">Enter Your Name</label><br>
+        <input type="text" id="name" name="username" class="name-input" placeholder="Leave Blank for annonymous"><br>
+        <label for="partnerName">Enter Your Special One's Name</label><br>
+        <input type="text" id="partnerName" name="partnerName" class="name-input" placeholder="Leave Blank for general greeting"><br>
+        <input type="submit" class="btn" value="Generate Greeting">
+    </form>
 
     <div class="greeting-card" id="greetingCard">
         <div class="colors"></div>
         <h1 class="text">Happy Holi!</h1>
         <p class="user-name" id="userName">Dear Friend</p>
         <p style="position: relative; z-index: 2; color: white;">Wishing you a colorful and joyful Holi! 🎨</p>
-        <button class="share-btn" id="shareBtn" onclick="shareGreeting()">Share</button>
+        <button class="share-btn" id="shareBtn" onclick="shareGreeting()">Share as Text</button>
+        <button class="share-btn" onclick="generateGif()">Share as Image</button>
     </div>
-    
     <div style="margin-top: 25px; color: rgb(13, 33, 211); font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; font-weight: 700;text-align: center;">
         This site was Developed & Maintained by <i>Diptaman</i>
     </div>
 
     <script>
-        const holiDate = new Date().getTime() + 5000; // Simulate a 5s countdown for debugging
-        let countdownInterval = setInterval(updateCountdown, 1000);
+        const holiDate = new Date("March 14, 2025 00:00:00").getTime();
 
         function updateCountdown() {
-            console.log("Count loop"); // Debugging
-
             const now = new Date().getTime();
             const difference = holiDate - now;
 
             if (difference <= 0) {
-                clearInterval(countdownInterval); // Stop the countdown
-                document.getElementById("timer").innerText = "Holi is Here! 🎉";
-                return;
+                document.getElementById("countdown").innerText = "Holi is Here! Happy Holi 🎉";
+                clearInterval(counterInterval);
+            }else{
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                document.getElementById("timer").innerText = `${days}d : ${hours}h : ${minutes}m : ${seconds}s`;
             }
-
-            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-            document.getElementById("timer").innerText = `${days}d : ${hours}h : ${minutes}m : ${seconds}s`;
         }
 
+        var counterInterval=setInterval(updateCountdown, 1000);
         updateCountdown(); // Initial Call
 
-        function generateGreeting() {
+        function generateGreeting(event) {
+            event.preventDefault();
             let name = document.getElementById("name").value.trim();
-            let displayName = name ? name : "Dear Friend";
+            if(name.length>0)
+                name="From: "+name;
+            let partnerName = document.getElementById("partnerName").value.trim();
+            if(partnerName.length>0)
+                partnerName="Happy Holi, "+partnerName+"! 🎉";
+            let displayName = `${partnerName}\n${name}`;
+
             document.getElementById("userName").innerText = displayName;
-
             document.getElementById("greetingCard").style.display = "block";
-
             document.getElementById("shareBtn").style.display = "inline-block";
         }
 
         function shareGreeting() {
             let name = document.getElementById("userName").innerText;
-            let message = `🌸 Happy Holi, ${name}! 🌸\nMay your life be filled with colors of joy and happiness! 🎨🎉\n\nCelebrate the festival of colors with love! ❤️✨`;
+            let partnerName = document.getElementById("partnerName").value.trim();
+            let message ="";
+            if(partnerName.length>0)
+                message += `🌸 Happy Holi, ${partnerName}! 🌸`
+            message += `\nMay your life be filled with colors of joy and happiness! 🎨🎉\n\nCelebrate the festival of colors with love! ❤️✨`;
+            if(name.length>0)
+                message += `\nYours Sincerely ${name}! 🌸`
             let whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, "_blank");
+        }
+
+        function generateGif() {
+            let card = document.getElementById("greetingCard");
+            
+            // Capture the greeting card multiple times for animation
+            let gif = new GIF({
+                workers: 2,
+                quality: 10
+            });
+
+            let captureFrames = (frameCount = 5, delay = 500) => {
+                let count = 0;
+                let interval = setInterval(() => {
+                    html2canvas(card).then(canvas => {
+                        gif.addFrame(canvas, { delay: delay });
+                        count++;
+                        if (count === frameCount) {
+                            clearInterval(interval);
+                            gif.render();
+                        }
+                    });
+                }, delay);
+            };
+
+            gif.on('finished', function(blob) {
+                let url = URL.createObjectURL(blob);
+                
+                // Provide Download Option
+                let downloadLink = document.createElement("a");
+                downloadLink.href = url;
+                downloadLink.download = "holi_greeting.gif";
+                downloadLink.innerText = "Download GIF";
+                downloadLink.style.display = "block";
+                document.body.appendChild(downloadLink);
+
+                // WhatsApp Share
+                let partnerName = document.getElementById("partnerName").value.trim();
+                let whatsappMessage = `🌸 Happy Holi ${partnerName}! 🌸\nHere's a special greeting for you! 🎨🎉\n\n`;
+                let whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(whatsappMessage)} ${url}`;
+                let shareBtn = document.createElement("a");
+                shareBtn.href = whatsappUrl;
+                shareBtn.innerText = "Share on WhatsApp";
+                shareBtn.style.display = "block";
+                shareBtn.style.marginTop = "10px";
+                document.body.appendChild(shareBtn);
+                open(whatsappUrl,"_blank")
+            });
+            // Start capturing frames
+            captureFrames();
         }
     </script>
 
