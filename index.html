@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Holi Greeting Card</title>
     <style>
-
         body {
             margin: 0;
             padding: 0;
@@ -138,7 +137,7 @@
 <body>
 
     <div class="countdown">
-        Holi in <span id="timer"></span> 🎉
+        <span id="timer"></span> 🎉
     </div>
 
     <div class="container">
@@ -153,18 +152,23 @@
         <p style="position: relative; z-index: 2; color: white;">Wishing you a colorful and joyful Holi! 🎨</p>
         <button class="share-btn" id="shareBtn" onclick="shareGreeting()">Share</button>
     </div>
+    
     <div style="margin-top: 25px; color: rgb(13, 33, 211); font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; font-weight: 700;text-align: center;">
         This site was Developed & Maintained by <i>Diptaman</i>
     </div>
 
     <script>
-        const holiDate = new Date("March 14, 2025 00:00:00").getTime();
+        const holiDate = new Date().getTime() + 5000; // Simulate a 5s countdown for debugging
+        let countdownInterval = setInterval(updateCountdown, 1000);
 
         function updateCountdown() {
+            console.log("Count loop"); // Debugging
+
             const now = new Date().getTime();
             const difference = holiDate - now;
 
             if (difference <= 0) {
+                clearInterval(countdownInterval); // Stop the countdown
                 document.getElementById("timer").innerText = "Holi is Here! 🎉";
                 return;
             }
@@ -177,7 +181,6 @@
             document.getElementById("timer").innerText = `${days}d : ${hours}h : ${minutes}m : ${seconds}s`;
         }
 
-        setInterval(updateCountdown, 1000);
         updateCountdown(); // Initial Call
 
         function generateGreeting() {
