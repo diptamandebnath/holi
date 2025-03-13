@@ -39,6 +39,7 @@
             border-radius: 15px;
             text-align: center;
             margin-bottom: 10px;
+            width: 300px;
         }
 
         .btn {
@@ -132,7 +133,12 @@
             background: #ff4081;
             color: white;
         }
-
+        label {
+            font-weight: bolder;
+            background: #ffffffbd;
+            padding: 5px;
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
@@ -141,10 +147,13 @@
         Holi in <span id="timer"></span> 🎉
     </div>
 
-    <div class="container">
-        <input type="text" id="name" class="name-input" placeholder="Enter Your Name">
-        <button class="btn" onclick="generateGreeting()">Get Your Greeting</button>
-    </div>
+    <form class="container" onsubmit="generateGreeting(event)">
+        <label for="username">Enter Your Name</label><br>
+        <input type="text" id="name" name="username" class="name-input" placeholder="Leave Blank for annonymous"><br>
+        <label for="partnerName">Enter Your Special One's Name</label><br>
+        <input type="text" id="partnerName" name="partnerName" class="name-input" placeholder="Leave Blank for general greeting"><br>
+        <input type="submit" class="btn" value="Generate Greeting">
+    </form>
 
     <div class="greeting-card" id="greetingCard">
         <div class="colors"></div>
@@ -168,30 +177,41 @@
                 document.getElementById("countdown").innerText = "Holi is Here! Happy Holi 🎉";
                 clearInterval(counterInterval);
             }else{
-            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-            document.getElementById("timer").innerText = `${days}d : ${hours}h : ${minutes}m : ${seconds}s`;
-        }
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                document.getElementById("timer").innerText = `${days}d : ${hours}h : ${minutes}m : ${seconds}s`;
+            }
         }
 
         var counterInterval=setInterval(updateCountdown, 1000);
         updateCountdown(); // Initial Call
 
-        function generateGreeting() {
+        function generateGreeting(event) {
+            event.preventDefault();
             let name = document.getElementById("name").value.trim();
-            let displayName = name ? name : "Dear Friend";
+            if(name.length>0)
+                name="From: "+name;
+            let partnerName = document.getElementById("partnerName").value.trim();
+            if(partnerName.length>0)
+                partnerName="Happy Holi, "+partnerName+"! 🎉";
+            let displayName = `${partnerName}\n${name}`;
+
             document.getElementById("userName").innerText = displayName;
-
             document.getElementById("greetingCard").style.display = "block";
-
             document.getElementById("shareBtn").style.display = "inline-block";
         }
 
         function shareGreeting() {
             let name = document.getElementById("userName").innerText;
-            let message = `🌸 Happy Holi, ${name}! 🌸\nMay your life be filled with colors of joy and happiness! 🎨🎉\n\nCelebrate the festival of colors with love! ❤️✨`;
+            let partnerName = document.getElementById("partnerName").value.trim();
+            let message ="";
+            if(partnerName.length>0)
+                message += `🌸 Happy Holi, ${partnerName}! 🌸`
+            message += `\nMay your life be filled with colors of joy and happiness! 🎨🎉\n\nCelebrate the festival of colors with love! ❤️✨`;
+            if(name.length>0)
+                message += `\nYours Sincerely ${name}! 🌸`
             let whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, "_blank");
         }
