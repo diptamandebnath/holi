@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Holi Greeting Card</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
+
     <style>
 
         body {
@@ -160,7 +163,8 @@
         <h1 class="text">Happy Holi!</h1>
         <p class="user-name" id="userName">Dear Friend</p>
         <p style="position: relative; z-index: 2; color: white;">Wishing you a colorful and joyful Holi! 🎨</p>
-        <button class="share-btn" id="shareBtn" onclick="shareGreeting()">Share</button>
+        <button class="share-btn" id="shareBtn" onclick="shareGreeting()">Share as Text</button>
+        <button class="share-btn" onclick="generateGif()">Share as Image</button>
     </div>
     <div style="margin-top: 25px; color: rgb(13, 33, 211); font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; font-weight: 700;text-align: center;">
         This site was Developed & Maintained by <i>Diptaman</i>
@@ -214,6 +218,56 @@
                 message += `\nYours Sincerely ${name}! 🌸`
             let whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, "_blank");
+        }
+
+        function generateGif() {
+            let card = document.getElementById("greetingCard");
+            
+            // Capture the greeting card multiple times for animation
+            let gif = new GIF({
+                workers: 2,
+                quality: 10
+            });
+
+            let captureFrames = (frameCount = 5, delay = 500) => {
+                let count = 0;
+                let interval = setInterval(() => {
+                    html2canvas(card).then(canvas => {
+                        gif.addFrame(canvas, { delay: delay });
+                        count++;
+                        if (count === frameCount) {
+                            clearInterval(interval);
+                            gif.render();
+                        }
+                    });
+                }, delay);
+            };
+
+            gif.on('finished', function(blob) {
+                let url = URL.createObjectURL(blob);
+                
+                // Provide Download Option
+                let downloadLink = document.createElement("a");
+                downloadLink.href = url;
+                downloadLink.download = "holi_greeting.gif";
+                downloadLink.innerText = "Download GIF";
+                downloadLink.style.display = "block";
+                document.body.appendChild(downloadLink);
+
+                // WhatsApp Share
+                let partnerName = document.getElementById("partnerName").value.trim();
+                let whatsappMessage = `🌸 Happy Holi ${partnerName}! 🌸\nHere's a special greeting for you! 🎨🎉\n\n`;
+                let whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(whatsappMessage)} ${url}`;
+                let shareBtn = document.createElement("a");
+                shareBtn.href = whatsappUrl;
+                shareBtn.innerText = "Share on WhatsApp";
+                shareBtn.style.display = "block";
+                shareBtn.style.marginTop = "10px";
+                document.body.appendChild(shareBtn);
+                open(whatsappUrl,"_blank")
+            });
+            // Start capturing frames
+            captureFrames();
         }
     </script>
 
